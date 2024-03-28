@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.tbg.ptg.nominacaov2.application.dto.NominacaoDTO;
+import br.com.tbg.ptg.nominacaov2.application.exceptions.ExcecoesDeNegocio;
 import br.com.tbg.ptg.nominacaov2.application.services.ApplicationService;
+import br.com.tbg.ptg.nominacaov2.application.services.ServicoDeValidacao;
 import br.com.tbg.ptg.nominacaov2.domain.models.NominacaoModel;
 import br.com.tbg.ptg.nominacaov2.domain.repository.NominacaoRepository;
 import br.com.tbg.ptg.nominacaov2.infra.saida.RabbitiMqEnventOut;
@@ -23,9 +25,12 @@ public class NominacaoService {
 
     @Autowired
     private ApplicationService applicationService;
+    
+    @Autowired
+    private ServicoDeValidacao servicoDeValidacao;
 
     public void salvar(NominacaoDTO nominacaoDTO) {
-    	validarDataRN1(LocalDate.parse(nominacaoDTO.getDiaOperacionalInicial()));
+    	servicoDeValidacao.aplicarTodas(nominacaoDTO);
         if (!nominacaoPorPeriodoRN3(nominacaoDTO)) {
             NominacaoModel nominacaoModel = applicationService.deDtoParaNominacaoModel(nominacaoDTO);
             nominacaoRepository.save(nominacaoModel);
@@ -33,9 +38,13 @@ public class NominacaoService {
             rabbitMQService.notificarAclNominacao(nominacaoDTO);
         }
     }
+    
+   
+    
 
     public boolean nominacaoPorPeriodoRN3(NominacaoDTO nominacaoDTO) {
-        if (nominacaoDTO.getDiaOperacionalFinal() != null && !nominacaoDTO.getDiaOperacionalFinal().isBlank()) {
+        servicoDeValidacao.aplicarTodas(nominacaoDTO);
+    	if (nominacaoDTO.getDiaOperacionalFinal() != null && !nominacaoDTO.getDiaOperacionalFinal().isBlank()) {
             ArrayList<NominacaoDTO> listaNominacaoPorPeriodo = new ArrayList<>();
             LocalDate dataFinal = LocalDate.parse(nominacaoDTO.getDiaOperacionalFinal());
             for (LocalDate dataInicial = LocalDate.parse(nominacaoDTO.getDiaOperacionalInicial());
@@ -64,12 +73,5 @@ public class NominacaoService {
         return false;
     }
     
-    public void validarDataRN1(LocalDate data) {
-        LocalDate dataAtual = LocalDate.now();
-        LocalDate dataLimite = dataAtual.plusDays(180);
-        
-        if (data.isAfter(dataLimite)) {
-            throw new IllegalArgumentException("Não é permitido incluir uma nomeação com data maior que 180 dias da data atual.");
-        }
-    }
+   
 }

@@ -9,14 +9,15 @@ import org.springframework.stereotype.Service;
 import br.com.tbg.ptg.matchengine.application.events.NominacaoEntradaAdicionadaEvent;
 import br.com.tbg.ptg.matchengine.application.events.NominacaoSaidaAdicionadaEvent;
 import br.com.tbg.ptg.matchengine.application.services.ApplicationService;
+import br.com.tbg.ptg.matchengine.application.services.RegraMenorDoParService;
 import br.com.tbg.ptg.matchengine.domain.models.MatchModel;
 import br.com.tbg.ptg.matchengine.domain.repository.IMatchRepository;
 
 @Service
 public class MatchService {
 	
-	//@Autowired
-	//private RegraMenorDoParService regraMenorDoParService;
+	@Autowired
+	private RegraMenorDoParService regraMenorDoParService;
 	
 	@Autowired
 	private IMatchRepository matchRepository;
@@ -27,13 +28,13 @@ public class MatchService {
 	public void eventoNominacaoEntradaRecebito(NominacaoEntradaAdicionadaEvent event) {
 		var listaMatchsDeHoje = todosOsMatchsPorDiaOperacional();
 		var matchModel = applicationService.verificaSeExisteContraparteEvendoRecebido(listaMatchsDeHoje, event);
-		gravarMatch(matchModel);
+		gravarMatch(regraMenorDoParService.aplicar(matchModel));
 	}
 
 	public void eventoNominacaoSaidaRecebito(NominacaoSaidaAdicionadaEvent event) {
 		var listaMatchsDeHoje = todosOsMatchsPorDiaOperacional();
 		var matchModel = applicationService.verificaSeExisteContraparteEvendoRecebido(listaMatchsDeHoje, event);
-		gravarMatch(matchModel);
+		gravarMatch(regraMenorDoParService.aplicar(matchModel));
 	}
 
 	private void gravarMatch(MatchModel match) {

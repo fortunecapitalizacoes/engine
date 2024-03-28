@@ -33,6 +33,20 @@ public class ApplicationService {
 													    	.build());
 	}
 	
+	public String criaNominacaoEntradaDSQAdicionadaEvent(NominacaoDTO dto) {	
+		if(dto.getCarregador().equals(dto.getCarregadorContraparte())) {
+			
+		}
+	    return gson.toJson(NominacaoEntradaAdicionadaEvent.builder()
+													    		.id(dto.getId())
+													    		.dataOperaciona(dto.getDiaOperacionalInicial())
+													    		.contraparte(dto.getCarregadorContraparte())
+													    		.volume(dto.getDesequilibrio_DQS())
+													    		.nomeCarregador(dto.getCarregador())
+													    		.fluxo(dto.getFluxo())
+													    	.build());
+	}
+	
 	public NominacaoModel deDtoParaNominacaoModel(NominacaoDTO nominacaoDTO) {
 		return NominacaoModel.builder()
 								.id(nominacaoDTO.getId())

@@ -30,13 +30,13 @@ public class RegraMenorDoParService {
     	
     	if(fluxo.equals("Entrada")) {
     		match.getNominacaoEntradaList().forEach(nominacao -> {
-    			nominacao.setVolume( nominacao.getVolume() - margem);
+    			nominacao.setVolume( nominacao.getVolume() * margem);
     		});
     	}
     	
     	if(fluxo.equals("Saída")) {
     		match.getNominacaoSaidaList().forEach(nominacao -> {
-    			nominacao.setVolume(nominacao.getVolume() / 100 * margem);
+    			nominacao.setVolume(nominacao.getVolume() * margem);
     		});
     	}
     	    	
@@ -55,7 +55,7 @@ public class RegraMenorDoParService {
             return SEM_MARGEM;
         }
 
-        return 100 - (Math.min(totalVolumeEntrada, totalVolumeSaida) / Math.max(totalVolumeEntrada, totalVolumeSaida) * 100);
+        return Math.min(totalVolumeEntrada, totalVolumeSaida) / Math.max(totalVolumeEntrada, totalVolumeSaida);
     }
 
     private String gerarFluxo(MatchModel matchModel) {
