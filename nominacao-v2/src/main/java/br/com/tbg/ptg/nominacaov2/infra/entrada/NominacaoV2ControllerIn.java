@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/nominacao-v2")
-public class NominacaoV2ControllerOut {
+public class NominacaoV2ControllerIn {
 
 	@Autowired
 	private NominacaoService nominacaoService;
@@ -20,6 +20,12 @@ public class NominacaoV2ControllerOut {
     @PostMapping
     public ResponseEntity<?> salvar(@RequestBody NominacaoDTO nominacaoDTO) {
     	nominacaoService.salvar(nominacaoDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(nominacaoDTO);
+    }
+    
+    @PostMapping("/editar")
+    public ResponseEntity<?> editar(@RequestBody NominacaoDTO nominacaoDTO) {
+    	nominacaoService.editar(nominacaoDTO);
         return ResponseEntity.status(HttpStatus.OK).body(nominacaoDTO);
     }
 }

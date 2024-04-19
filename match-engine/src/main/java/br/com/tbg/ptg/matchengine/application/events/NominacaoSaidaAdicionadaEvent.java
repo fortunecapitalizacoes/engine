@@ -16,4 +16,7 @@ public class NominacaoSaidaAdicionadaEvent {
 	private String contraparte;
 	private String dataOperaciona;
 	private String fluxo;	
+		
 }
+
+

@@ -11,6 +11,7 @@ import br.com.tbg.ptg.matchengine.application.events.NominacaoSaidaAdicionadaEve
 import br.com.tbg.ptg.matchengine.application.services.ApplicationService;
 import br.com.tbg.ptg.matchengine.application.services.RegraMenorDoParService;
 import br.com.tbg.ptg.matchengine.domain.models.MatchModel;
+import br.com.tbg.ptg.matchengine.domain.models.MatchModel.NominacaoModel;
 import br.com.tbg.ptg.matchengine.domain.repository.IMatchRepository;
 
 @Service
@@ -26,15 +27,50 @@ public class MatchService {
 	private ApplicationService applicationService;
 
 	public void eventoNominacaoEntradaRecebito(NominacaoEntradaAdicionadaEvent event) {
-		var listaMatchsDeHoje = todosOsMatchsPorDiaOperacional();
-		var matchModel = applicationService.verificaSeExisteContraparteEvendoRecebido(listaMatchsDeHoje, event);
-		gravarMatch(regraMenorDoParService.aplicar(matchModel));
+			var listaMatchs = buscaMatchsPorPeriodo(LocalDate.now(), LocalDate.now().plusDays(190));
+			if(!editar(listaMatchs, event)) {
+				var matchModel = applicationService.verificaSeExisteContraparteEvendoRecebido(listaMatchs, event);
+				gravarMatch(regraMenorDoParService.aplicar(matchModel));
+			}		
+	}
+	
+	private boolean editar(List<MatchModel> listaMatchs, NominacaoEntradaAdicionadaEvent event) {
+	    boolean matchEncontrado = false;
+	    for (MatchModel match : listaMatchs) {
+	        for (NominacaoModel nominacao : match.getNominacaoEntradaList()) {
+	            if (nominacao.getId().equals(event.getId())) {
+	                nominacao.setVolume(event.getVolume());
+	                matchEncontrado = true;
+	                matchRepository.save(match);
+	                break; // Uma vez que encontramos e atualizamos a nominacao, podemos sair do loop interno
+	            }
+	        }
+	    }
+	    return matchEncontrado;
+	}
+	
+	private boolean editar(List<MatchModel> listaMatchs, NominacaoSaidaAdicionadaEvent event) {
+	    boolean matchEncontrado = false;
+	    for (MatchModel match : listaMatchs) {
+	        for (NominacaoModel nominacao : match.getNominacaoSaidaList()) {
+	            if (nominacao.getId().equals(event.getId())) {
+	                nominacao.setVolume(event.getVolume());
+	                matchEncontrado = true;
+	                matchRepository.save(match);
+	                break; // Uma vez que encontramos e atualizamos a nominacao, podemos sair do loop interno
+	            }
+	        }
+	    }
+	    return matchEncontrado;
 	}
 
+
 	public void eventoNominacaoSaidaRecebito(NominacaoSaidaAdicionadaEvent event) {
-		var listaMatchsDeHoje = todosOsMatchsPorDiaOperacional();
-		var matchModel = applicationService.verificaSeExisteContraparteEvendoRecebido(listaMatchsDeHoje, event);
-		gravarMatch(regraMenorDoParService.aplicar(matchModel));
+		var listaMatchs = buscaMatchsPorPeriodo(LocalDate.now(), LocalDate.now().plusDays(190));
+		if(!editar(listaMatchs, event)) {
+			var matchModel = applicationService.verificaSeExisteContraparteEvendoRecebido(listaMatchs, event);
+			gravarMatch(regraMenorDoParService.aplicar(matchModel));
+		}
 	}
 
 	private void gravarMatch(MatchModel match) {
@@ -47,8 +83,12 @@ public class MatchService {
 	    return match;
 	}
 
-	public List<MatchModel> todosOsMatchsPorDiaOperacional() {
-		return matchRepository.findByDataOperacional(LocalDate.now());
+	public List<MatchModel> todosOsMatchsPorDiaOperacional(LocalDate date) {
+		return matchRepository.findByDataOperacional(date);
+	}
+	
+	public List<MatchModel> buscaMatchsPorPeriodo(LocalDate date1, LocalDate date2) {
+		return matchRepository.findByDataOperacionalBetween(date1, date2);
 	}
 
 	public List<MatchModel> totosOsMaths() {

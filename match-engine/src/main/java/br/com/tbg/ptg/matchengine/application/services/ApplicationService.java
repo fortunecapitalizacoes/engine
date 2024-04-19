@@ -24,57 +24,68 @@ public class ApplicationService {
 				.contraparte(event.getContraparte()).volume(event.getVolume()).build();
 	}
 
-	public MatchModel verificaSeExisteContraparteEvendoRecebido(List<MatchModel> listaMatchsDeHoje,
+	public MatchModel verificaSeExisteContraparteEvendoRecebido(List<MatchModel> listaMatchs,
 			NominacaoEntradaAdicionadaEvent eventNominacaoEntrada) {
 
-		for (MatchModel match : listaMatchsDeHoje) {
-			for (NominacaoModel nominacaoSaida : match.getNominacaoSaidaList()) {
-				if (eventNominacaoEntrada.getNomeCarregador().equals(nominacaoSaida.getContraparte())
-						&& eventNominacaoEntrada.getContraparte().equals(nominacaoSaida.getNomeCarregador())) {
-					match.getNominacaoEntradaList().add(deEventoParaModel(eventNominacaoEntrada));
-					return match;
-				}
-			}
-			for (NominacaoModel nominacaoEntrada : match.getNominacaoEntradaList()) {
-				if (eventNominacaoEntrada.getNomeCarregador().equals(nominacaoEntrada.getNomeCarregador())
-						&& eventNominacaoEntrada.getContraparte().equals(nominacaoEntrada.getContraparte())) {
-					match.getNominacaoEntradaList().add(deEventoParaModel(eventNominacaoEntrada));
-					return match;
-				}
-			}
+		String dataEvento = eventNominacaoEntrada.getDataOperaciona();
 
+		for (MatchModel match : listaMatchs) {
+			String dataMatch = match.getDataOperacional().toString();
+			
+				for (NominacaoModel nominacaoSaida : match.getNominacaoSaidaList()) {
+					if (eventNominacaoEntrada.getNomeCarregador().equals(nominacaoSaida.getContraparte())
+							&& dataMatch.equals(dataEvento) && eventNominacaoEntrada.getContraparte().equals(nominacaoSaida.getNomeCarregador())) {
+						match.getNominacaoEntradaList().add(deEventoParaModel(eventNominacaoEntrada));
+						return match;
+					}
+				}
+				for (NominacaoModel nominacaoEntrada : match.getNominacaoEntradaList()) {
+					if (eventNominacaoEntrada.getNomeCarregador().equals(nominacaoEntrada.getNomeCarregador())
+							&& dataMatch.equals(dataEvento) &&  eventNominacaoEntrada.getContraparte().equals(nominacaoEntrada.getContraparte())) {
+						match.getNominacaoEntradaList().add(deEventoParaModel(eventNominacaoEntrada));
+						return match;
+					}
+				}
+			
 		}
 
-		return MatchModel.builder().nominacaoEntradaList(List.of(deEventoParaModel(eventNominacaoEntrada))).build();
+		return MatchModel.builder().nominacaoEntradaList(List.of(deEventoParaModel(eventNominacaoEntrada)))
+				.dataOperacional(LocalDate.parse(eventNominacaoEntrada.getDataOperaciona())).build();
 	}
 
 	public MatchModel verificaSeExisteContraparteEvendoRecebido(List<MatchModel> listaMatchsDeHoje,
 			NominacaoSaidaAdicionadaEvent eventNominacaoSaida) {
 
+		var dataEvento = eventNominacaoSaida.getDataOperaciona();
+
 		for (MatchModel match : listaMatchsDeHoje) {
-			for (NominacaoModel nominacaoSaida : match.getNominacaoEntradaList()) {
-				if (eventNominacaoSaida.getNomeCarregador().equals(nominacaoSaida.getContraparte())
-						&& nominacaoSaida.getNomeCarregador().equals(eventNominacaoSaida.getContraparte())
+			String dataMatch = match.getDataOperacional().toString();
+			if(dataMatch.equals(dataEvento)) {
+				for (NominacaoModel nominacaoEntrada : match.getNominacaoEntradaList()) {
+					if (eventNominacaoSaida.getNomeCarregador().equals(nominacaoEntrada.getContraparte())
+							&&  nominacaoEntrada.getNomeCarregador().equals(eventNominacaoSaida.getContraparte())
 
-				) {
-					match.getNominacaoSaidaList().add(deEventoParaModel(eventNominacaoSaida));
-					return match;
+					) {
+						match.getNominacaoSaidaList().add(deEventoParaModel(eventNominacaoSaida));
+						return match;
+					}
+
 				}
-
-			}
-			for (NominacaoModel nominacaoSaida : match.getNominacaoSaidaList()) {
-				if (eventNominacaoSaida.getNomeCarregador().equals(nominacaoSaida.getNomeCarregador())
-						&& eventNominacaoSaida.getContraparte().equals(nominacaoSaida.getContraparte())) {
-					match.getNominacaoSaidaList().add(deEventoParaModel(eventNominacaoSaida));
-					return match;
+				for (NominacaoModel nominacaoSaida : match.getNominacaoSaidaList()) {
+					if (eventNominacaoSaida.getNomeCarregador().equals(nominacaoSaida.getNomeCarregador())
+							 && eventNominacaoSaida.getContraparte().equals(nominacaoSaida.getContraparte())) {
+						match.getNominacaoSaidaList().add(deEventoParaModel(eventNominacaoSaida));
+						return match;
+					}
 				}
 			}
-
+				
+			
 		}
 
 		return MatchModel.builder().id(UUID.randomUUID().toString())
-				.nominacaoSaidaList(List.of(deEventoParaModel(eventNominacaoSaida))).dataOperacional(LocalDate.now())
-				.build();
+				.nominacaoSaidaList(List.of(deEventoParaModel(eventNominacaoSaida)))
+				.dataOperacional(LocalDate.parse(eventNominacaoSaida.getDataOperaciona())).build();
 	}
 
 }

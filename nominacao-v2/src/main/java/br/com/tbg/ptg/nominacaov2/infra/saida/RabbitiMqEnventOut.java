@@ -28,7 +28,9 @@ public class RabbitiMqEnventOut {
 
 	// fluxo = entrada ou saida
 	public void verificaFluxoCriaEvento(NominacaoDTO dto) {
-		dto.setId(UUID.randomUUID().toString());
+		if(dto.getId() == null || dto.getId().isBlank()) {
+			dto.setId(UUID.randomUUID().toString());
+		}
 		if (dto.getFluxo().equals(ENTRADA) && dto.getDesequilibrio_DQS().isBlank()) {
 			enviarMensagemNominacaoEntrada(applicationService.criaNominacaoEntradaAdicionadaEvent(dto));
 		}
@@ -48,7 +50,7 @@ public class RabbitiMqEnventOut {
 			var DTOSaida = NominacaoDTO.builder().id(dto.getId()).carregador(dto.getCarregador())
 					.carregadorContraparte(dto.getCarregador()).ciclo(ConstantesApplicationUtil.SAIDA)
 					.contrato(dto.getContrato()).diaOperacionalInicial(dto.getDiaOperacionalInicial())
-					.fluxo(dto.getFluxo()).instalacao("Duto").quantidadeDiáriaNominada_QDN(dto.getDesequilibrio_DQS())
+					.fluxo(dto.getFluxo()).instalacao("duto").quantidadeDiáriaNominada_QDN(dto.getDesequilibrio_DQS())
 					.build();
 
 			enviarMensagemNominacaoEntrada(applicationService.criaNominacaoEntradaAdicionadaEvent(DTOEntrada));

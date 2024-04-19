@@ -12,8 +12,8 @@ public class RegraMenorDoParService {
     private static final String SEM_FLUXO = "";
 
     public MatchModel aplicar(MatchModel match) {
-        double margem = SEM_MARGEM;
-        String fluxo = SEM_FLUXO;
+        var margem = SEM_MARGEM;
+        var fluxo = SEM_FLUXO;
        
         if (validar(match)) {
             margem = gerarMargem(match);
@@ -48,8 +48,8 @@ public class RegraMenorDoParService {
             throw new IllegalArgumentException("MatchModel é nulo.");
         }
 
-        double totalVolumeEntrada = calcularTotalVolume(matchModel.getNominacaoEntradaList());
-        double totalVolumeSaida = calcularTotalVolume(matchModel.getNominacaoSaidaList());
+        var totalVolumeEntrada = calcularTotalVolume(matchModel.getNominacaoEntradaList());
+        var totalVolumeSaida = calcularTotalVolume(matchModel.getNominacaoSaidaList());
 
         if (totalVolumeEntrada == 0 || totalVolumeSaida == 0) {
             return SEM_MARGEM;
@@ -63,8 +63,8 @@ public class RegraMenorDoParService {
             throw new IllegalArgumentException("MatchModel é nulo.");
         }
 
-        double totalVolumeEntrada = calcularTotalVolume(matchModel.getNominacaoEntradaList());
-        double totalVolumeSaida = calcularTotalVolume(matchModel.getNominacaoSaidaList());
+        var totalVolumeEntrada = calcularTotalVolume(matchModel.getNominacaoEntradaList());
+        var totalVolumeSaida = calcularTotalVolume(matchModel.getNominacaoSaidaList());
 
         if (totalVolumeEntrada > totalVolumeSaida) {
             return "Entrada";
@@ -76,7 +76,7 @@ public class RegraMenorDoParService {
     }
 
     private double calcularTotalVolume(List<? extends NominacaoModel> nominacaoList) {
-        double totalVolume = 0.0;
+        var totalVolume = 0.0;
         if (nominacaoList != null) {
             for (NominacaoModel nominacao : nominacaoList) {
                 totalVolume += nominacao.getVolume();

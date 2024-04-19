@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nominacao-v2-acl
+spec:
+  replicas: 3 
+  selector:
+    matchLabels:
+      app: nominacao-v2-acl
+  template:
+    metadata:
+      labels:
+        app: nominacao-v2-acl
+    spec:
+      containers:
+      - name: nominacao-v2-acl
+        image: ulr-imag/nominacao-v2-acl:latest  # Substitua "ulr-imag" pelo URL do seu Azure Container Registry
+        ports:
+        - containerPort: 8030

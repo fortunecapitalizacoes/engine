@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'br.com.tbg.ptg'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 
 java {
 	sourceCompatibility = '17'
@@ -33,7 +33,8 @@ dependencies {
 	testImplementation 'org.springframework.amqp:spring-rabbit-test'
 	// https://mvnrepository.com/artifact/com.google.code.gson/gson
 	implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
-	
+	implementation 'io.springfox:springfox-swagger2:2.9.2'
+    implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 }
 
 tasks.named('test') {

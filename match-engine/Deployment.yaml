@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: match-engine
+spec:
+  replicas: 3 
+  selector:
+    matchLabels:
+      app: match-engine
+  template:
+    metadata:
+      labels:
+        app: match-engine
+    spec:
+      containers:
+      - name: match-engine
+        image: ulr-imag/match-engine:latest  # Substitua "ulr-imag" pelo URL do seu Azure Container Registry
+        ports:
+        - containerPort: 8010 

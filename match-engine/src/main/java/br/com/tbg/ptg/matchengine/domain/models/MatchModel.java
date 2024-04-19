@@ -23,14 +23,9 @@ public class MatchModel {
     private List<NominacaoModel> nominacaoEntradaList = new ArrayList<>();
     private List<NominacaoModel> nominacaoSaidaList = new ArrayList<>();
     private LocalDate dataOperacional;
-
-	
-	    
+  
     
-    
-    
-    
-    @Data
+    	@Data
 	    @Builder
 	    @NoArgsConstructor
 	    @AllArgsConstructor
